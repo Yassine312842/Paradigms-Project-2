@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Darija Translator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      width: 360px;
+      min-height: 460px;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: #1e293b;
+    }
+
+    .container {
+      padding: 18px;
+    }
+
+    .header {
+      margin-bottom: 16px;
+    }
+
+    .title {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0;
+      color: #0f172a;
+    }
+
+    .subtitle {
+      margin: 6px 0 0;
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #334155;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 110px;
+      border: 1px solid #dbeafe;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 14px;
+      resize: none;
+      outline: none;
+      background: #f8fafc;
+      color: #0f172a;
+      transition: 0.2s ease;
+    }
+
+    textarea:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+      background: #ffffff;
+    }
+
+    .actions {
+      margin-top: 14px;
+    }
+
+    button {
+      width: 100%;
+      border: none;
+      border-radius: 14px;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      color: white;
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      box-shadow: 0 8px 18px rgba(79, 70, 229, 0.25);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(79, 70, 229, 0.3);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .result-box {
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 14px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+    }
+
+    .result-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 8px;
+    }
+
+    #result {
+      min-height: 60px;
+      white-space: pre-wrap;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #0f172a;
+    }
+
+    .footer {
+      margin-top: 14px;
+      text-align: center;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .loading {
+      color: #6366f1;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1 class="title">Darija Translator</h1>
+      <p class="subtitle">Translate selected text into Moroccan Darija</p>
+    </div>
+
+    <div class="card">
+      <label for="textInput">Text to translate</label>
+      <textarea id="textInput" placeholder="Selected text will appear here"></textarea>
+
+      <div class="actions">
+        <button id="translateBtn">Translate</button>
+      </div>
+
+      <div class="result-box">
+        <div class="result-title">Translation</div>
+        <div id="result">Your translation will appear here</div>
+      </div>
+    </div>
+
+    <div class="footer">
+      Powered by your REST API
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

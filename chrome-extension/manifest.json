@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Darija Translator",
+  "version": "1.0",
+  "description": "Translate selected text to Moroccan Darija",
+  "permissions": ["contextMenus", "storage", "activeTab", "scripting"],
+  "host_permissions": ["http://localhost:8080/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  }
+}
