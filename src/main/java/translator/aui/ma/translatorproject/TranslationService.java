@@ -11,7 +11,7 @@ import java.util.Scanner;
 
 public class TranslationService {
 
-    private static final String API_KEY = System.getProperty("GEMINI_API_KEY");
+    private static final String API_KEY = System.getProperty("OPENROUTER_API_KEY");
 
     public String translateToDarija(String text) {
         if (text == null || text.trim().isEmpty()) {
@@ -19,7 +19,7 @@ public class TranslationService {
         }
 
         if (API_KEY == null || API_KEY.isBlank()) {
-            return "Gemini API key is missing.";
+            return "OpenRouter API key is missing.";
         }
 
         int maxAttempts = 3;
@@ -27,25 +27,26 @@ public class TranslationService {
 
         for (int attempt = 1; attempt <= maxAttempts; attempt++) {
             try {
-                String endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY;
+                String endpoint = "https://openrouter.ai/api/v1/chat/completions";
 
                 URI uri = URI.create(endpoint);
                 HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
                 connection.setRequestMethod("POST");
+                connection.setRequestProperty("Authorization", "Bearer " + API_KEY);
                 connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                connection.setRequestProperty("HTTP-Referer", "http://localhost");
+                connection.setRequestProperty("X-Title", "Darija Translator Project");
                 connection.setDoOutput(true);
 
                 String prompt = "Translate the following text into natural Moroccan Arabic Darija. Return only the translation in Darija, with no explanation, no transliteration, and no extra text: " + text;
 
                 String jsonInput = """
                         {
-                          "contents": [
+                          "model": "openrouter/free",
+                          "messages": [
                             {
-                              "parts": [
-                                {
-                                  "text": "%s"
-                                }
-                              ]
+                              "role": "user",
+                              "content": "%s"
                             }
                           ]
                         }
@@ -63,17 +64,9 @@ public class TranslationService {
 
                 int responseCode = connection.getResponseCode();
 
-                if (responseCode == 429) {
-                    return "Translation service is temporarily unavailable because the Gemini free-tier quota has been exceeded. Please try again later.";
-                }
-
-                if (responseCode == 503 && attempt < maxAttempts) {
+                if (responseCode == 429 && attempt < maxAttempts) {
                     Thread.sleep(waitMillis);
                     continue;
-                }
-
-                if (responseCode == 503) {
-                    return "Translation service is temporarily unavailable because the model is under high demand. Please try again later.";
                 }
 
                 Scanner scanner;
@@ -89,6 +82,10 @@ public class TranslationService {
                 }
                 scanner.close();
 
+                if (responseCode == 429) {
+                    return "Translation service is temporarily unavailable due to OpenRouter rate limits. Please try again later.";
+                }
+
                 if (responseCode < 200 || responseCode >= 300) {
                     return "Translation service failed. Please try again later.";
                 }
@@ -96,22 +93,20 @@ public class TranslationService {
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode root = mapper.readTree(response.toString());
 
-                JsonNode textNode = root.path("candidates")
+                JsonNode textNode = root.path("choices")
                         .path(0)
-                        .path("content")
-                        .path("parts")
-                        .path(0)
-                        .path("text");
+                        .path("message")
+                        .path("content");
 
                 if (textNode.isMissingNode() || textNode.asText().isBlank()) {
-                    return "No translation returned by Gemini.";
+                    return "No translation returned by OpenRouter.";
                 }
 
                 return textNode.asText().trim();
 
             } catch (Exception e) {
                 if (attempt == maxAttempts) {
-                    return "Error while calling Gemini API: " + e.getMessage();
+                    return "Error while calling OpenRouter API: " + e.getMessage();
                 }
 
                 try {
