@@ -3,7 +3,6 @@ package translator.aui.ma.translatorproject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -64,6 +63,19 @@ public class TranslationService {
 
                 int responseCode = connection.getResponseCode();
 
+                if (responseCode == 429) {
+                    return "Translation service is temporarily unavailable because the Gemini free-tier quota has been exceeded. Please try again later.";
+                }
+
+                if (responseCode == 503 && attempt < maxAttempts) {
+                    Thread.sleep(waitMillis);
+                    continue;
+                }
+
+                if (responseCode == 503) {
+                    return "Translation service is temporarily unavailable because the model is under high demand. Please try again later.";
+                }
+
                 Scanner scanner;
                 if (responseCode >= 200 && responseCode < 300) {
                     scanner = new Scanner(connection.getInputStream(), StandardCharsets.UTF_8);
@@ -77,13 +89,8 @@ public class TranslationService {
                 }
                 scanner.close();
 
-                if (responseCode == 503 && attempt < maxAttempts) {
-                    Thread.sleep(waitMillis);
-                    continue;
-                }
-
                 if (responseCode < 200 || responseCode >= 300) {
-                    return "Gemini API error: " + response;
+                    return "Translation service failed. Please try again later.";
                 }
 
                 ObjectMapper mapper = new ObjectMapper();

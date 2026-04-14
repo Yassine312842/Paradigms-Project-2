@@ -25,4 +25,23 @@
         <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
 
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Protected API</web-resource-name>
+            <url-pattern>/api/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>apiuser</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+    <login-config>
+        <auth-method>BASIC</auth-method>
+        <realm-name>TranslatorRealm</realm-name>
+    </login-config>
+
+    <security-role>
+        <role-name>apiuser</role-name>
+    </security-role>
+
 </web-app>
